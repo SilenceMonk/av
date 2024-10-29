@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="respawn" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="node_name" default="projectcontroller2"/>
+  
+  <!-- Controller parameters -->
+  <arg name="rate" default="5"/>  <!-- 5 Hz (1/0.2s) based on step size -->
+  
+  <!-- Debug settings -->
+  <group if="$(arg debug)">
+    <node name="$(arg node_name)" 
+          pkg="projectcontroller2" 
+          type="projectcontroller2" 
+          output="screen"
+          launch-prefix="xterm -e gdb --args">
+          
+      <param name="rate" value="$(arg rate)"/>
+    </node>
+  </group>
+  
+  <!-- Normal operation settings -->
+  <group unless="$(arg debug)">
+    <node name="$(arg node_name)" 
+          pkg="projectcontroller2" 
+          type="projectcontroller2"
+          output="screen"
+          respawn="$(arg respawn)">
+          
+      <param name="rate" value="$(arg rate)"/>
+      
+      <!-- Topic remappings -->
+      <remap from="/lead_dist" to="/lead_dist"/>
+      <remap from="/car/state/vel_x" to="/car/state/vel_x"/>
+      <remap from="/cmd_accel" to="/cmd_accel"/>
+      <remap from="/rel_vel" to="/rel_vel"/>
+    </node>
+  </group>
+
+</launch>
